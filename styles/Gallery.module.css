@@ -1,24 +1,61 @@
 .container {
   min-height: 100vh;
   background: var(--bg);
-  padding: 48px 24px 80px;
+  padding: 0 24px 80px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 32px;
+}
+
+.logoImg {
+  object-fit: contain;
+  height: 100px;
+  width: auto;
+  max-width: 45vw;
+}
+
+@media (max-width: 480px) {
+  .topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    background: var(--bg);
+    z-index: 100;
+  }
+
+  .logoImg {
+    height: 36px;
+    max-width: 42vw;
+  }
+
+  .container {
+    padding-top: 80px;
+  }
 }
 
 .header {
   text-align: center;
   margin-bottom: 64px;
+  padding-top: 32px;
 }
 
-.logo {
-  font-size: 0.8rem;
-  letter-spacing: 0.25em;
+.brandSub {
+  font-size: clamp(1.4rem, 4vw, 2.2rem);
+  letter-spacing: 0.3em;
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 16px;
+  font-weight: 600;
 }
 
 .title {
-  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-size: clamp(2.8rem, 8vw, 5rem);
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.03em;

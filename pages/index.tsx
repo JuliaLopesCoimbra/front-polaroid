@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Head from "next/head";
+import Image from "next/image";
 import styles from "../styles/Gallery.module.css";
 
 interface Photo {
@@ -69,10 +70,15 @@ export default function Gallery() {
       </Head>
 
       <div className={styles.container}>
+        <div className={styles.topbar}>
+          <Image src="/picbrand.png" alt="PicBrand" width={350} height={140} className={styles.logoImg} />
+          <Image src="/nespresso.png" alt="Nespresso" width={350} height={140} className={styles.logoImg} />
+        </div>
+
         <header className={styles.header}>
-          <p className={styles.logo}>Galeria de Fotos</p>
-          <h1 className={styles.title}>{EVENT_NAME}</h1>
-          <p className={styles.subtitle}>Encontre e baixe seu retrato exclusivo</p>
+          <h1 className={styles.title}>GALERIA PICBRAND</h1>
+          <p className={styles.brandSub}>NESPRESSO</p>
+          <p className={styles.subtitle}>Encontre e baixe sua polaroid</p>
           <Link href="/find" className={styles.findBtn}>
             🔍 Encontrar minha foto
           </Link>
