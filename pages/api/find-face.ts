@@ -59,8 +59,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const command = new SearchFacesByImageCommand({
       CollectionId: COLLECTION_ID,
       Image: { Bytes: imageBytes },
-      MaxFaces: 10,
-      FaceMatchThreshold: 80,
+      MaxFaces: 100,
+      FaceMatchThreshold: 70,
     });
 
     const response = await rekognition.send(command);
@@ -88,7 +88,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
     );
 
-    const photos = candidates.filter(Boolean);
+    const photos = (candidates.filter(Boolean) as { url: string; photo_id: string; confidence: number }[])
+      .sort((a, b) => b.confidence - a.confidence);
 
     if (photos.length === 0) {
       return res

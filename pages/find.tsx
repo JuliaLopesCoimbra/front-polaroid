@@ -200,14 +200,20 @@ export default function Find() {
           </>
         )}
 
-        {/* Resultados — clique na foto = download automático */}
+        {/* Resultados */}
+        {state === "found" && results.length === 0 && (
+          <div className={styles.result}>
+            <p className={styles.resultLabel}>Nenhuma foto encontrada, tente novamente</p>
+            <button className={styles.btnSecondary} onClick={reset}>
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
         {state === "found" && results.length > 0 && (
           <div className={styles.result}>
             <p className={styles.resultLabel}>
-              ✅ {results.length === 1
-                ? "Sua foto foi encontrada"
-                : `${results.length} fotos encontradas`}{" "}
-              — clique para baixar
+              Encontramos {results.length} {results.length === 1 ? "foto sua" : "fotos suas"}!
             </p>
 
             <div className={styles.resultGrid}>

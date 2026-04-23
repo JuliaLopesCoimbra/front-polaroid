@@ -59,6 +59,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const start      = (safePage - 1) * limit;
     const photos     = all.slice(start, start + limit);
 
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+    res.setHeader("Pragma", "no-cache");
     return res.status(200).json({
       photos,
       total,
