@@ -12,7 +12,7 @@ const EVENT_NAME = process.env.NEXT_PUBLIC_EVENT_NAME || "Retrato PIC";
 const EVENT_DATE = process.env.NEXT_PUBLIC_EVENT_DATE || "";
 
 const WA_LINK =
-  "https://wa.me/5511972936666?text=Resgate%20sua%20foto%20no%20link%20http%3A%2F%2F54.233.190.225";
+  "https://wa.me/5511972936666?text=Resgate%20sua%20foto%20no%20link%20https%3A%2F%2Fpolaroid.picbrand.com.br";
 
 export default function QRCodePage() {
   return (
