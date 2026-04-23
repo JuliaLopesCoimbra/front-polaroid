@@ -114,20 +114,13 @@ export default function Find() {
     startCamera();
   }, [startCamera]);
 
-  const downloadPhoto = useCallback(async (url: string, photo_id: string) => {
-    try {
-      const res = await fetch(url);
-      const blob = await res.blob();
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = `polaroid-${photo_id.slice(0, 8)}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(link.href);
-    } catch {
-      window.open(url, "_blank");
-    }
+  const downloadPhoto = useCallback((url: string, photo_id: string) => {
+    const link = document.createElement("a");
+    link.href = `/api/download?url=${encodeURIComponent(url)}`;
+    link.download = `polaroid-${photo_id.slice(0, 8)}.jpg`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }, []);
 
   // Câmera visível durante: camera, countdown, searching
