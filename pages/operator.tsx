@@ -180,7 +180,7 @@ export default function OperatorPage() {
       .cut-top {
   display: block;
   position: absolute;
-  top: 20%;
+  top: 15%;
   left: 0;
   width: 83%;
   border-top: 2px dashed #888888;
