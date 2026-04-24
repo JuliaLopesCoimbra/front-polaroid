@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Head from "next/head";
 import styles from "../styles/Operator.module.css";
 
@@ -23,47 +23,36 @@ interface Selection {
   url: string;
 }
 
-const LIMIT        = 10;
-const POLL_INTERVAL = 5000; // ms
+const LIMIT = 10;
 
 export default function OperatorPage() {
-  const [data,       setData]       = useState<PageData | null>(null);
-  const [page,       setPage]       = useState(1);
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState(false);
+  const [data, setData] = useState<PageData | null>(null);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [selections, setSelections] = useState<Record<string, Selection>>({});
-  const [newCount,   setNewCount]   = useState(0); // fotos novas detectadas
-  const pageRef = useRef(page);
-  useEffect(() => { pageRef.current = page; }, [page]);
 
-  const fetchPage = useCallback((p: number, silent = false) => {
-    if (!silent) { setLoading(true); setError(false); }
+  const fetchPage = useCallback((p: number) => {
+    setLoading(true);
+    setError(false);
     fetch(`/api/photos?page=${p}&limit=${LIMIT}`)
-      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((json: PageData) => {
-        setData((prev) => {
-          // Detecta fotos novas comparando o total (só quando silent)
-          if (silent && prev && json.total > prev.total) {
-            setNewCount(json.total - prev.total);
-            setTimeout(() => setNewCount(0), 4000);
-          }
-          return json;
-        });
-        if (!silent) setLoading(false);
+      .then((r) => {
+        if (!r.ok) throw new Error();
+        return r.json();
       })
-      .catch(() => { if (!silent) { setError(true); setLoading(false); } });
+      .then((json: PageData) => {
+        setData(json);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
   }, []);
 
-  // Carrega ao trocar de página
   useEffect(() => {
     fetchPage(page);
   }, [page, fetchPage]);
-
-  // Polling silencioso
-  useEffect(() => {
-    const id = setInterval(() => fetchPage(pageRef.current, true), POLL_INTERVAL);
-    return () => clearInterval(id);
-  }, [fetchPage]);
 
   const photos = data?.photos ?? [];
   const total = data?.total ?? 0;
@@ -132,7 +121,7 @@ export default function OperatorPage() {
       .flatMap(({ url, qty }) =>
         Array.from(
           { length: qty },
-          () => `<div class="print-page"><img src="${url}" alt="polaroid" /><div class="cut-line"><hr /><span>✂ cortar aqui</span></div></div>`
+          () => `<div class="print-page"><img src="${url}" alt="polaroid" /></div>`
         )
       )
       .join("");
@@ -146,26 +135,20 @@ export default function OperatorPage() {
     <title>Impressão Polaroid</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #fff; }
+      body { background: #000; }
       .print-page {
-        width: 100%;
-        padding: 0 60px;
-        display: block;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         page-break-after: always;
       }
       .print-page:last-child { page-break-after: auto; }
-      img { width: 100%; display: block; }
-      .cut-line { margin-top: 8px; }
-      .cut-line hr { border: none; border-top: 1px dashed #AAAAAA; }
-      .cut-line span { display: block; text-align: center; font-size: 10px; color: #AAAAAA; font-family: sans-serif; margin-top: 2px; }
+      img { max-width: 100%; max-height: 100%; object-fit: contain; }
       @media print {
         body { background: #fff; }
-        .print-page {
-          width: 100%;
-          padding: 0 60px;
-          display: block;
-          page-break-after: always;
-        }
+        .print-page { width: 100%; height: 100vh; page-break-after: always; }
       }
     </style>
   </head>
@@ -193,14 +176,6 @@ export default function OperatorPage() {
         <header className={styles.header}>
           <div className={styles.headerTop}>
             <h1 className={styles.title}>Painel do Operador</h1>
-            <span className={styles.liveBadge}>
-              <span className={styles.liveDot} /> ao vivo
-            </span>
-            {newCount > 0 && (
-              <span className={styles.newBadge}>
-                +{newCount} nova{newCount !== 1 ? "s" : ""}!
-              </span>
-            )}
             {totalSelected > 0 && (
               <span className={styles.badge}>
                 {totalSelected} foto{totalSelected !== 1 ? "s" : ""} selecionada{totalSelected !== 1 ? "s" : ""}
