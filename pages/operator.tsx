@@ -121,7 +121,7 @@ export default function OperatorPage() {
       .flatMap(({ url, qty }) =>
         Array.from(
           { length: qty },
-          () => `<div class="print-page"><img src="${url}" alt="polaroid" /></div>`
+          () => `<div class="print-page"><img src="${url}" alt="polaroid" /><div class="cut-line"></div></div>`
         )
       )
       .join("");
@@ -136,19 +136,37 @@ export default function OperatorPage() {
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { background: #000; }
-      .print-page {
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        page-break-after: always;
-      }
+   .print-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  page-break-after: always;
+}
       .print-page:last-child { page-break-after: auto; }
       img { max-width: 100%; max-height: 100%; object-fit: contain; }
+      .cut-line {
+        display: none;
+      }
       @media print {
         body { background: #fff; }
-        .print-page { width: 100%; height: 100vh; page-break-after: always; }
+        .print-page { width: 100%; height: 100vh; page-break-after: always; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
+        .cut-line {
+          display: block;
+          width: 100%;
+          border: none;
+          border-top: 1px dashed #aaaaaa;
+          margin-top: 8px;
+          text-align: center;
+          font-size: 10px;
+          color: #aaaaaa;
+          padding-top: 4px;
+        }
+        .cut-line::after {
+          content: "✂ cortar aqui";
+        }
       }
     </style>
   </head>
@@ -230,7 +248,6 @@ export default function OperatorPage() {
                     className={`${styles.card} ${isSelected ? styles.cardSelected : ""}`}
                     onClick={() => toggleOne(photo)}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={photo.url}
                       alt={`Polaroid ${photo.photo_id.slice(0, 8)}`}
