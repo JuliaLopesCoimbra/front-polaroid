@@ -145,68 +145,26 @@ export default function OperatorPage() {
   <head>
     <title>Impressão Polaroid</title>
     <style>
-      @page { margin: 0; size: A4 portrait; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { margin: 0; padding: 0; background: #fff; }
+      body { background: #fff; }
       .print-page {
         width: 100%;
-        margin: 0;
-        padding: 0;
+        padding: 0 60px;
         display: block;
         page-break-after: always;
-        break-after: page;
       }
-      .print-page:last-child { page-break-after: auto; break-after: auto; }
-      .print-page img {
-        display: block;
-        width: 100%;
-        height: auto;
-        margin: 0;
-        padding: 0;
-        vertical-align: top;
-        object-fit: contain;
-        object-position: top center;
-      }
-      .cut-line { display: none; }
+      .print-page:last-child { page-break-after: auto; }
+      img { width: 100%; display: block; }
+      .cut-line { margin-top: 8px; }
+      .cut-line hr { border: none; border-top: 1px dashed #AAAAAA; }
+      .cut-line span { display: block; text-align: center; font-size: 10px; color: #AAAAAA; font-family: sans-serif; margin-top: 2px; }
       @media print {
-        html, body { margin: 0; padding: 0; }
+        body { background: #fff; }
         .print-page {
           width: 100%;
-          margin: 0;
-          padding: 0;
+          padding: 0 60px;
           display: block;
           page-break-after: always;
-          break-after: page;
-        }
-        .print-page img {
-          display: block;
-          width: 100%;
-          height: auto;
-          margin: 0;
-          padding: 0;
-          vertical-align: top;
-          object-fit: contain;
-          object-position: top center;
-        }
-        .cut-line {
-          display: block;
-          width: 100%;
-          margin: 0;
-          padding: 0;
-        }
-        .cut-line hr {
-          border: none;
-          border-top: 1px dashed #AAAAAA;
-          width: 100%;
-          margin: 0;
-        }
-        .cut-line span {
-          display: block;
-          text-align: center;
-          font-size: 10px;
-          color: #AAAAAA;
-          margin: 2px 0 0;
-          font-family: sans-serif;
         }
       }
     </style>
