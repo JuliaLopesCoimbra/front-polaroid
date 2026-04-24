@@ -146,11 +146,12 @@ export default function OperatorPage() {
   page-break-after: always;
 }
       .print-page:last-child { page-break-after: auto; }
-      img { max-width: 100%; max-height: 100%; object-fit: contain; }
+      img { max-width: 100%; max-height: 85%; object-fit: contain; }
       .cut-line {
         display: none;
       }
       @media print {
+      @page { margin: 0mm; size: auto; }
         body { background: #fff; }
         .print-page { width: 100%; height: 100vh; page-break-after: always; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
         .cut-line {
