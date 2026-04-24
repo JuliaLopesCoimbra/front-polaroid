@@ -131,7 +131,7 @@ export default function OperatorPage() {
           { length: qty },
           () => `
             <div class="print-page">
-              <div class="cut-top">✂</div>
+              <div class="cut-top"></div>
               <div class="cut-right"></div>
               <img src="${url}" alt="polaroid" />
             </div>
@@ -193,7 +193,7 @@ export default function OperatorPage() {
         .cut-right {
           display: block;
           position: absolute;
-          right: 11%;
+          right: 13%;
           top: 0;
           height: 100%;
           border-right: 2px dashed #888888;
