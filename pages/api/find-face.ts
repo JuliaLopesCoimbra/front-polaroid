@@ -60,7 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       CollectionId: COLLECTION_ID,
       Image: { Bytes: imageBytes },
       MaxFaces: 100,
-      FaceMatchThreshold: 70,
+      FaceMatchThreshold: 50,
     });
 
     const response = await rekognition.send(command);

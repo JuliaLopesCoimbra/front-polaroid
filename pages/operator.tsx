@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Head from "next/head";
 import styles from "../styles/Operator.module.css";
 
@@ -23,36 +23,47 @@ interface Selection {
   url: string;
 }
 
-const LIMIT = 10;
+const LIMIT        = 10;
+const POLL_INTERVAL = 5000; // ms
 
 export default function OperatorPage() {
-  const [data, setData] = useState<PageData | null>(null);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [data,       setData]       = useState<PageData | null>(null);
+  const [page,       setPage]       = useState(1);
+  const [loading,    setLoading]    = useState(true);
+  const [error,      setError]      = useState(false);
   const [selections, setSelections] = useState<Record<string, Selection>>({});
+  const [newCount,   setNewCount]   = useState(0); // fotos novas detectadas
+  const pageRef = useRef(page);
+  useEffect(() => { pageRef.current = page; }, [page]);
 
-  const fetchPage = useCallback((p: number) => {
-    setLoading(true);
-    setError(false);
+  const fetchPage = useCallback((p: number, silent = false) => {
+    if (!silent) { setLoading(true); setError(false); }
     fetch(`/api/photos?page=${p}&limit=${LIMIT}`)
-      .then((r) => {
-        if (!r.ok) throw new Error();
-        return r.json();
-      })
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((json: PageData) => {
-        setData(json);
-        setLoading(false);
+        setData((prev) => {
+          // Detecta fotos novas comparando o total (só quando silent)
+          if (silent && prev && json.total > prev.total) {
+            setNewCount(json.total - prev.total);
+            setTimeout(() => setNewCount(0), 4000);
+          }
+          return json;
+        });
+        if (!silent) setLoading(false);
       })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+      .catch(() => { if (!silent) { setError(true); setLoading(false); } });
   }, []);
 
+  // Carrega ao trocar de página
   useEffect(() => {
     fetchPage(page);
   }, [page, fetchPage]);
+
+  // Polling silencioso
+  useEffect(() => {
+    const id = setInterval(() => fetchPage(pageRef.current, true), POLL_INTERVAL);
+    return () => clearInterval(id);
+  }, [fetchPage]);
 
   const photos = data?.photos ?? [];
   const total = data?.total ?? 0;
@@ -176,6 +187,14 @@ export default function OperatorPage() {
         <header className={styles.header}>
           <div className={styles.headerTop}>
             <h1 className={styles.title}>Painel do Operador</h1>
+            <span className={styles.liveBadge}>
+              <span className={styles.liveDot} /> ao vivo
+            </span>
+            {newCount > 0 && (
+              <span className={styles.newBadge}>
+                +{newCount} nova{newCount !== 1 ? "s" : ""}!
+              </span>
+            )}
             {totalSelected > 0 && (
               <span className={styles.badge}>
                 {totalSelected} foto{totalSelected !== 1 ? "s" : ""} selecionada{totalSelected !== 1 ? "s" : ""}
