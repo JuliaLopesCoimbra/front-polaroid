@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Head from "next/head";
 import styles from "../styles/Operator.module.css";
 
@@ -23,36 +23,44 @@ interface Selection {
   url: string;
 }
 
-const LIMIT = 10;
+const LIMIT         = 10;
+const POLL_INTERVAL = 5000;
 
 export default function OperatorPage() {
-  const [data, setData] = useState<PageData | null>(null);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [data,       setData]       = useState<PageData | null>(null);
+  const [page,       setPage]       = useState(1);
+  const [loading,    setLoading]    = useState(true);
+  const [error,      setError]      = useState(false);
   const [selections, setSelections] = useState<Record<string, Selection>>({});
+  const [newCount,   setNewCount]   = useState(0);
+  const pageRef = useRef(page);
+  useEffect(() => { pageRef.current = page; }, [page]);
 
-  const fetchPage = useCallback((p: number) => {
-    setLoading(true);
-    setError(false);
+  const fetchPage = useCallback((p: number, silent = false) => {
+    if (!silent) { setLoading(true); setError(false); }
     fetch(`/api/photos?page=${p}&limit=${LIMIT}`)
-      .then((r) => {
-        if (!r.ok) throw new Error();
-        return r.json();
-      })
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((json: PageData) => {
-        setData(json);
-        setLoading(false);
+        setData((prev) => {
+          if (silent && prev && json.total > prev.total) {
+            setNewCount(json.total - prev.total);
+            setTimeout(() => setNewCount(0), 4000);
+          }
+          return json;
+        });
+        if (!silent) setLoading(false);
       })
-      .catch(() => {
-        setError(true);
-        setLoading(false);
-      });
+      .catch(() => { if (!silent) { setError(true); setLoading(false); } });
   }, []);
 
   useEffect(() => {
     fetchPage(page);
   }, [page, fetchPage]);
+
+  useEffect(() => {
+    const id = setInterval(() => fetchPage(pageRef.current, true), POLL_INTERVAL);
+    return () => clearInterval(id);
+  }, [fetchPage]);
 
   const photos = data?.photos ?? [];
   const total = data?.total ?? 0;
@@ -123,7 +131,7 @@ export default function OperatorPage() {
           { length: qty },
           () => `
             <div class="print-page">
-              <div class="cut-top"></div>
+              <div class="cut-top">✂</div>
               <div class="cut-right"></div>
               <img src="${url}" alt="polaroid" />
             </div>
@@ -153,7 +161,7 @@ export default function OperatorPage() {
         position: relative;
       }
       .print-page:last-child { page-break-after: auto; }
-      img { max-width: 75%; max-height: 100%; object-fit: contain; display: block; }
+      img { max-width: 83%; max-height: 100%; object-fit: contain; display: block; }
       .cut-top { display: none; }
       .cut-right { display: none; }
       @media print {
@@ -168,27 +176,27 @@ export default function OperatorPage() {
           align-items: flex-end;
           justify-content: flex-start;
         }
-        img { max-width: 75%; max-height: 100%; object-fit: contain; display: block; }
-        .cut-top {
-          display: block;
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          border-top: 1px dashed #aaaaaa;
-          font-size: 10px;
-          color: #aaaaaa;
-          text-align: right;
-          padding-right: 6px;
-        }
-        .cut-top::after { content: "✂"; }
+        img { max-width: 83%; max-height: 100%; object-fit: contain; display: block; }
+      .cut-top {
+  display: block;
+  position: absolute;
+  top: 32%;
+  left: 0;
+  width: 83%;
+  border-top: 2px dashed #888888;
+  font-size: 12px;
+  color: #888888;
+  text-align: right;
+  padding-right: 6px;
+  padding-top: 2px;
+}
         .cut-right {
           display: block;
           position: absolute;
-          right: 0;
+          right: 17%;
           top: 0;
           height: 100%;
-          border-right: 1px dashed #aaaaaa;
+          border-right: 2px dashed #888888;
         }
       }
     </style>
@@ -217,6 +225,14 @@ export default function OperatorPage() {
         <header className={styles.header}>
           <div className={styles.headerTop}>
             <h1 className={styles.title}>Painel do Operador</h1>
+            <span className={styles.liveBadge}>
+              <span className={styles.liveDot} /> ao vivo
+            </span>
+            {newCount > 0 && (
+              <span className={styles.newBadge}>
+                +{newCount} nova{newCount !== 1 ? "s" : ""}!
+              </span>
+            )}
             {totalSelected > 0 && (
               <span className={styles.badge}>
                 {totalSelected} foto{totalSelected !== 1 ? "s" : ""} selecionada{totalSelected !== 1 ? "s" : ""}
