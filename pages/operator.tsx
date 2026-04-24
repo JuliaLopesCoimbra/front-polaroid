@@ -176,11 +176,11 @@ export default function OperatorPage() {
           align-items: flex-end;
           justify-content: flex-start;
         }
-        img { max-width: 83%; max-height: 100%; object-fit: contain; display: block; }
+        img { max-width: 88%; max-height: 100%; object-fit: contain; display: block; }
       .cut-top {
   display: block;
   position: absolute;
-  top: 32%;
+  top: 20%;
   left: 0;
   width: 83%;
   border-top: 2px dashed #888888;
@@ -193,7 +193,7 @@ export default function OperatorPage() {
         .cut-right {
           display: block;
           position: absolute;
-          right: 17%;
+          right: 11%;
           top: 0;
           height: 100%;
           border-right: 2px dashed #888888;
