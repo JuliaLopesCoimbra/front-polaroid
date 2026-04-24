@@ -121,7 +121,13 @@ export default function OperatorPage() {
       .flatMap(({ url, qty }) =>
         Array.from(
           { length: qty },
-          () => `<div class="print-page"><img src="${url}" alt="polaroid" /><div class="cut-line"></div></div>`
+          () => `
+            <div class="print-page">
+              <div class="cut-top"></div>
+              <div class="cut-right"></div>
+              <img src="${url}" alt="polaroid" />
+            </div>
+          `
         )
       )
       .join("");
@@ -135,38 +141,54 @@ export default function OperatorPage() {
     <title>Impressão Polaroid</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #000; }
-   .print-page {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
-  page-break-after: always;
-}
-      .print-page:last-child { page-break-after: auto; }
-      img { max-width: 100%; max-height: 85%; object-fit: contain; }
-      .cut-line {
-        display: none;
+      body { background: #fff; }
+      .print-page {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-start;
+        flex-direction: row;
+        page-break-after: always;
+        position: relative;
       }
+      .print-page:last-child { page-break-after: auto; }
+      img { max-width: 75%; max-height: 100%; object-fit: contain; display: block; }
+      .cut-top { display: none; }
+      .cut-right { display: none; }
       @media print {
-      @page { margin: 0mm; size: auto; }
+        @page { margin: 0mm; size: auto; }
         body { background: #fff; }
-        .print-page { width: 100%; height: 100vh; page-break-after: always; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
-        .cut-line {
-          display: block;
+        .print-page {
           width: 100%;
-          border: none;
+          height: 100vh;
+          page-break-after: always;
+          position: relative;
+          display: flex;
+          align-items: flex-end;
+          justify-content: flex-start;
+        }
+        img { max-width: 75%; max-height: 100%; object-fit: contain; display: block; }
+        .cut-top {
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
           border-top: 1px dashed #aaaaaa;
-          margin-top: 8px;
-          text-align: center;
           font-size: 10px;
           color: #aaaaaa;
-          padding-top: 4px;
+          text-align: right;
+          padding-right: 6px;
         }
-        .cut-line::after {
-          content: "✂ cortar aqui";
+        .cut-top::after { content: "✂"; }
+        .cut-right {
+          display: block;
+          position: absolute;
+          right: 0;
+          top: 0;
+          height: 100%;
+          border-right: 1px dashed #aaaaaa;
         }
       }
     </style>
