@@ -132,7 +132,7 @@ export default function OperatorPage() {
       .flatMap(({ url, qty }) =>
         Array.from(
           { length: qty },
-          () => `<div class="print-page"><img src="${url}" alt="polaroid" /></div>`
+          () => `<div class="print-page"><img src="${url}" alt="polaroid" /><div class="cut-line"><hr /><span>✂ cortar aqui</span></div></div>`
         )
       )
       .join("");
@@ -145,21 +145,69 @@ export default function OperatorPage() {
   <head>
     <title>Impressão Polaroid</title>
     <style>
+      @page { margin: 0; size: A4 portrait; }
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { background: #000; }
+      html, body { margin: 0; padding: 0; background: #fff; }
       .print-page {
-        width: 100vw;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        display: block;
         page-break-after: always;
+        break-after: page;
       }
-      .print-page:last-child { page-break-after: auto; }
-      img { max-width: 100%; max-height: 100%; object-fit: contain; }
+      .print-page:last-child { page-break-after: auto; break-after: auto; }
+      .print-page img {
+        display: block;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        vertical-align: top;
+        object-fit: contain;
+        object-position: top center;
+      }
+      .cut-line { display: none; }
       @media print {
-        body { background: #fff; }
-        .print-page { width: 100%; height: 100vh; page-break-after: always; }
+        html, body { margin: 0; padding: 0; }
+        .print-page {
+          width: 100%;
+          margin: 0;
+          padding: 0;
+          display: block;
+          page-break-after: always;
+          break-after: page;
+        }
+        .print-page img {
+          display: block;
+          width: 100%;
+          height: auto;
+          margin: 0;
+          padding: 0;
+          vertical-align: top;
+          object-fit: contain;
+          object-position: top center;
+        }
+        .cut-line {
+          display: block;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        .cut-line hr {
+          border: none;
+          border-top: 1px dashed #AAAAAA;
+          width: 100%;
+          margin: 0;
+        }
+        .cut-line span {
+          display: block;
+          text-align: center;
+          font-size: 10px;
+          color: #AAAAAA;
+          margin: 2px 0 0;
+          font-family: sans-serif;
+        }
       }
     </style>
   </head>
